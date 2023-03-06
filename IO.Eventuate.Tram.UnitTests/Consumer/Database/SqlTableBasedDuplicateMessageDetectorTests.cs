@@ -20,10 +20,14 @@ namespace IO.Eventuate.Tram.UnitTests.Consumer.Database
 		[SetUp]
 		public void SetupDetector()
 		{
+            var dbContextOptions = new DbContextOptionsBuilder<EventuateTramDbContext>().UseInMemoryDatabase(Guid.NewGuid().ToString()).Options;
+            var logger = Substitute.For<ILogger<SqlTableBasedDuplicateMessageDetector>>();
+            EventuateSchema a = new EventuateSchema();
+
 			var dbContextProvider = Substitute.For<IEventuateTramDbContextProvider>();
-			_dbContext = Substitute.For<EventuateTramDbContext>();
+            _dbContext = Substitute.For<EventuateTramDbContext>(dbContextOptions, a);
 			dbContextProvider.CreateDbContext().Returns(_dbContext);
-			var logger = Substitute.For<ILogger<SqlTableBasedDuplicateMessageDetector>>();
+
 			_detector = new SqlTableBasedDuplicateMessageDetector(dbContextProvider, logger);
 		}
 
